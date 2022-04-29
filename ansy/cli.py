@@ -2,10 +2,12 @@ from pathlib import Path
 
 import typer
 
-app = typer.Typer()
+from ansy.app import sync as syncapp
+
+cliapp = typer.Typer()
 
 
-@app.command()
+@cliapp.command()
 def sync(
     input_dir: Path = typer.Argument(
         ...,
@@ -15,12 +17,11 @@ def sync(
         help="The input directory. Contains csv files which want to be synchronized.",
     )
 ):
-    data_files = input_dir.glob("*.csv")
-    for file in data_files:
-        typer.echo(file.name)
+    data_files = list(input_dir.glob("*.csv"))
+    syncapp.run_dash_app(data_files)
 
 
-@app.callback()
+@cliapp.callback()
 def callback():
     """
     ansy is a tool for ANnnotating and SYnchronizing wearable sensor data.
