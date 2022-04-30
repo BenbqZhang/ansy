@@ -1,9 +1,11 @@
+from typing import Optional
 from pathlib import Path
 
 import typer
 
 from ansy.app import sync as syncapp
 from ansy.app import align as alignapp
+from ansy.app import annotate as annotateapp
 
 cliapp = typer.Typer()
 
@@ -49,6 +51,23 @@ def align(
     ),
 ):
     alignapp.align_data(data_dir, output_dir, sync_file)
+
+
+@cliapp.command()
+def annotate(
+    datafile: Path = typer.Argument(
+        ...,
+        exists=True,
+        file_okay=True,
+        readable=True,
+        help="The data file which want to be annotated.",
+    ),
+    result_path: Path = typer.Argument(..., help="The annotation result file."),
+    config: Optional[Path] = typer.Option(
+        None, help="The user settings file. Only json format is supported at present."
+    ),
+):
+    annotateapp.run_dash_app(datafile, result_path, config)
 
 
 @cliapp.callback()
