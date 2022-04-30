@@ -97,8 +97,10 @@ class AnnotateApp:
     def run_app(self):
         self.app.run_server(debug=True)
 
-    def show_labels(self):
-        print(self.annotated_labels)
+    def save_label(self, label):
+        label_str = ",".join([str(lbl) for lbl in label])
+        with open(self.result_path, "a") as f:
+            f.write(label_str + "\n")
 
     def apply_callback(self):
         @self.app.callback(
@@ -175,7 +177,7 @@ class AnnotateApp:
                     (self.annotate_left, self.annotate_right, self.current_label)
                 )
 
-                self.show_labels()
+                self.save_label(self.annotated_labels[-1])
 
                 fcolor = color_map(self.current_label)
                 fig.add_vrect(
