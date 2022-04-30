@@ -18,7 +18,7 @@ def sync(
     )
 ):
     data_files = list(input_dir.glob("*.csv"))
-    syncapp.run_dash_app(data_files)
+    syncapp.run_dash_app(data_files, input_dir)
 
 
 @cliapp.callback()

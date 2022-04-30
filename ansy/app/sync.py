@@ -29,8 +29,9 @@ def create_figure(dataframe):
 
 
 class SyncApp:
-    def __init__(self, data_items: List[DataItem]):
+    def __init__(self, data_items: List[DataItem], data_dir: Path):
         self.data_items = data_items
+        self.data_dir = data_dir
         self.curr_xaxis = {item.id: 0 for item in data_items}
         self.app = Dash(__name__)
 
@@ -64,13 +65,37 @@ class SyncApp:
 
                 yield detail_component
 
+        @self.app.callback(
+            Output("save-btn-msg", "children"), Input("save-sync-res-btn", "n_clicks")
+        )
+        def save_sync_result(n_clicks):
+            if n_clicks and n_clicks > 0:
+                msg = self.write_sync_result_to_file()
+                return msg
+            return ""
+
         self.app.layout = html.Div(
             [
                 html.H1("Time Series Data Synchronization Tool"),
                 html.Hr(),
                 *generate_item_details(),
+                html.Hr(),
+                html.Button(id="save-sync-res-btn", children="save sync result"),
+                html.P(id="save-btn-msg"),
             ]
         )
+
+    def write_sync_result_to_file(self) -> str:
+        result_filename = "sync_result.txt"
+        result_file_path = self.data_dir / result_filename
+
+        with open(result_file_path, "w") as res_file:
+            for item in self.data_items:
+                line = f"{item.filename},{self.curr_xaxis[item.id]}\n"
+                res_file.write(line)
+
+        message = f"written result to file {result_filename}"
+        return message
 
     def run_app(self):
         self.app.run_server(debug=True)
@@ -89,7 +114,7 @@ def load_all_data(data_files: List[Path]) -> List[DataItem]:
     return data_items
 
 
-def run_dash_app(data_files: List[Path]):
+def run_dash_app(data_files: List[Path], data_dir: Path):
     data_items = load_all_data(data_files)
 
-    SyncApp(data_items).run_app()
+    SyncApp(data_items, data_dir).run_app()
