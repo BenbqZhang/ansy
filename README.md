@@ -1,6 +1,6 @@
 # ansy
 
-ansy is a tool for **AN**nnotating and **SY**nchronizing wearable sensor data
+ansy is a tool for **AN**notating and **SY**nchronizing wearable sensor data
 
 **WIP**!
 
